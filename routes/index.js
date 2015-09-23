@@ -6,7 +6,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/explore', function(req, res, next) {
+router.all('/*', function(req, res, next) {
   var resp = {};
   resp['request-headers'] = req.headers;
   resp['request-params'] = req.params;
@@ -19,7 +19,9 @@ router.get('/explore', function(req, res, next) {
   info['method'] = req.method;
   info['cookie'] = req.signedCookies;
   info['protocol'] = req.protocol;
-  info['secure'] = req.secure?'tls':'ssl';
+  if (info['protocol'] == 'https'){
+      info['secure'] = req.secure?'tls':'ssl';
+  }
   info['recv-time'] = req._startTime;
   console.log(req.ServerResponse);
   if (req.query.pretty) {
