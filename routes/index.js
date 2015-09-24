@@ -1,4 +1,5 @@
 var express = require('express');
+var geoip = require('geoip-lite');
 var router = express.Router();
 
 /* GET home page. */
@@ -24,10 +25,21 @@ router.all('/*', function(req, res, next) {
   }
   info['recv-time'] = req._startTime;
   console.log(req.ServerResponse);
+  var ary = req.ip.split(':');
+  var ip = ary[ary.length -1];
+  geo = geoip.lookup(ip);
+  if (geo) {
+    resp['geo'] = geo;
+    resp['google-map'] = 'https://www.google.com.tw/maps/@'+geo.ll[0]+',' +geo.ll[1]+',10z'
+  }else{
+    resp['geo'] = {'error': 'unavailable! maybe a private ip'};
+  }
+  console.log(resp);
+  console.log(info['geo']);
+  /* Latest convert*/
   if (req.query.pretty) {
       resp = "<pre id=\'json\'>\n" + JSON.stringify(resp, null, 4) + "\n</pre>";
   }
-  console.log(resp);
   res.send(resp);
 });
 
