@@ -7,6 +7,20 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+function rand_path(len)
+{
+var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for( var i=0; i < len; i++ )
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  return text;
+}
+
+router.all('/random', function(req, res, next) {
+  path = rand_path(10);
+  res.redirect('/'+path);
+});
+
 router.all('/*', function(req, res, next) {
   var resp = {};
   resp['request-headers'] = req.headers;
