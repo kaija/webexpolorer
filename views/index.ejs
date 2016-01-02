@@ -3,9 +3,47 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
   </head>
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Path</th>
+          <th>Parameter</th>
+          <th>Response</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="active">
+          <td>Index</td>
+          <td>/</td>
+          <td>N/A</td>
+          <td>This help page</td>
+        </tr>
+        <tr class="success">
+          <td>Request Detail</td>
+          <td>/$any</td>
+          <td>pretty(optional)</td>
+          <td></td>
+        </tr>
+        <tr class="info">
+          <td>Return Code</td>
+          <td>/code/$code</td>
+          <td>return code</td>
+          <td>Return the HTTP status code</td>
+        </tr>
+        <tr class="warning">
+          <td>Random Redirect</td>
+          <td>/random</td>
+          <td></td>
+          <td>Return the 302 redirect with random url</td>
+        </tr>
+      </tbody>
+    </table>
   </body>
 </html>
