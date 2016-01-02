@@ -1,6 +1,7 @@
 var express = require('express');
 var geoip = require('geoip-lite');
 var router = express.Router();
+var parser = require('ua-parser-js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -15,7 +16,10 @@ var text = "";
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   return text;
 }
-
+router.get('/ua', function(req, res, next) {
+  var ua = parser(req.headers['user-agent']);
+  res.send("<pre id=\'json\'>\n" + JSON.stringify(ua, null, '  ') + "\n</pre>");
+});
 router.all('/random', function(req, res, next) {
   path = rand_path(10);
   res.redirect('/'+path);
