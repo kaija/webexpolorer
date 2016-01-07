@@ -2,6 +2,8 @@ var express = require('express');
 var geoip = require('geoip-lite');
 var router = express.Router();
 var parser = require('ua-parser-js');
+var config = require('../config.json');
+var http = require('http');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -33,6 +35,31 @@ router.get('/geoip', function(req, res, next) {
     res.send("<pre id=\'json\'>\n" + JSON.stringify(geo, null, '  ') + "\n</pre>");
   }else{
     res.send(geo);
+  }
+});
+
+/* DBIP geolocation api */
+router.get('/dbip', function(req, res, next) {
+  if(config.dbip.apikey && config.dbip.apikey.length != 0){
+    var ary = req.ip.split(':');
+    var ip = ary[ary.length -1];
+    http.get({
+      host: 'api.db-ip.com',
+      path: '/addrinfo?addr=' + ip + '&api_key=' + config.dbip.apikey
+    }, function(response){
+      var body = '';
+      response.on('data', function(chunk){body+=chunk;});
+      response.on('end', function(){
+        if (req.query.pretty) {
+          res.send("<pre id=\'json\'>\n" + JSON.stringify(JSON.parse(body), null, '  ') + "\n</pre>");
+        }else{
+          res.send(JSON.parse(body));
+        }
+
+      });
+    });
+  }else{
+    res.status(503).send('Service not support!');
   }
 });
 
