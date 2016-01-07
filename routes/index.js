@@ -63,6 +63,32 @@ router.get('/dbip', function(req, res, next) {
   }
 });
 
+
+router.get('/ipinfo', function(req, res, next) {
+  if(config.ipinfo){
+    var ary = req.ip.split(':');
+    var ip = ary[ary.length -1];
+    http.get({
+      host: 'ipinfo.io',
+      path: '/' + ip
+    }, function(response){
+      var body = '';
+      response.on('data', function(chunk){body+=chunk;});
+      response.on('end', function(){
+        if (req.query.pretty) {
+          res.send("<pre id=\'json\'>\n" + JSON.stringify(JSON.parse(body), null, '  ') + "\n</pre>");
+        }else{
+          res.send(JSON.parse(body));
+        }
+
+      });
+    });
+  }else{
+    res.status(503).send('Service not support!');
+  }
+});
+
+
 router.all('/random', function(req, res, next) {
   path = rand_path(10);
   res.redirect('/'+path);
