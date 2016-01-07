@@ -18,8 +18,24 @@ var text = "";
 }
 router.get('/ua', function(req, res, next) {
   var ua = parser(req.headers['user-agent']);
-  res.send("<pre id=\'json\'>\n" + JSON.stringify(ua, null, '  ') + "\n</pre>");
+  if (req.query.pretty) {
+    res.send("<pre id=\'json\'>\n" + JSON.stringify(ua, null, '  ') + "\n</pre>");
+  }else{
+    res.send(ua);
+  }
 });
+
+router.get('/geoip', function(req, res, next) {
+  var ary = req.ip.split(':');
+  var ip = ary[ary.length -1];
+  geo = geoip.lookup(ip);
+  if (req.query.pretty) {
+    res.send("<pre id=\'json\'>\n" + JSON.stringify(geo, null, '  ') + "\n</pre>");
+  }else{
+    res.send(geo);
+  }
+});
+
 router.all('/random', function(req, res, next) {
   path = rand_path(10);
   res.redirect('/'+path);
