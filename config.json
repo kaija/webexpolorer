@@ -1,4 +1,9 @@
 {
+  "es_log": true,
+  "es_server": "localhost",
+  "es_index": "webaccess",
+  "es_type": "pass",
+  "es_port": 9200,
   "ipinfo": {},
   "dbip":{
     "apikey": ""

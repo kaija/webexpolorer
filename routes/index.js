@@ -4,6 +4,19 @@ var router = express.Router();
 var parser = require('ua-parser-js');
 var config = require('../config.json');
 var http = require('http');
+if (config.es_log) {
+  var elasticsearch = require('elasticsearch');
+  var es_client = new elasticsearch.Client({
+    host: config.es_server + ":" + config.es_port,
+    log: 'trace'
+  });
+
+}
+
+
+function padDigits(number, digits) {
+  return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
+}
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -98,8 +111,9 @@ router.all('/*', function(req, res, next) {
   var resp = {};
   resp['request-headers'] = req.headers;
   resp['request-params'] = req.params;
-  resp['request-body'] = req.body;
-  resp['request-query'] = req.query;
+  resp['request-body'] = JSON.stringify(req.body);
+  resp['request-query'] = JSON.stringify(req.query);
+  console.log(req.ips);
   info = resp['request-info'] = {}
   info['address'] = req.ip;
   info['proxys'] = req.ips;
@@ -111,7 +125,6 @@ router.all('/*', function(req, res, next) {
       info['secure'] = req.secure?'tls':'ssl';
   }
   info['recv-time'] = req._startTime;
-  console.log(req.ServerResponse);
   var ary = req.ip.split(':');
   var ip = ary[ary.length -1];
   geo = geoip.lookup(ip);
@@ -121,8 +134,25 @@ router.all('/*', function(req, res, next) {
   }else{
     resp['geo'] = {'error': 'unavailable! maybe a private ip'};
   }
+  console.log('----------------------------');
   console.log(resp);
-  console.log(info['geo']);
+  console.log('----------------------------');
+  console.log(resp['geo']);
+  console.log('----------------------------');
+  if(config.es_log) {
+    var d = new Date();
+    var Y = d.getYear() + 1900;
+    var M = padDigits(d.getMonth() + 1, 2);
+    var D = padDigits(d.getDate(), 2);
+    es_client.index({
+      index: config.es_index + '-' + Y + '.' + M + '.' + D,
+      type: config.es_type,
+      body: resp
+    }, function(err, res){
+      if (err) console.log(err);
+      else console.log(res);
+    });
+  }
   /* Latest convert*/
   if (req.query.pretty) {
       resp = "<pre id=\'json\'>\n" + JSON.stringify(resp, null, 4) + "\n</pre>";
