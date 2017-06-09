@@ -103,3 +103,14 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
+
+var signals = {
+  'SIGINT': 2,
+  'SIGTERM': 15
+};
+
+Object.keys(signals).forEach(function (signal) {
+  process.on(signal, function () {
+    shutdown(signal, signals[signal]);
+  });
+});
